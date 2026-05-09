@@ -37,12 +37,33 @@ if uploaded_file is not None:
     # --- 5. THE "PRETTY" DISPLAY ---
     # We make a copy to add 'RM' back for the browser view
     display_df = df.copy()
+
+    #This line shifts the numbering to starts at 1 instead of 0
+    display_df.index = display_df.index + 1
+    
     for col in ['Selling Price', 'Cost Price', 'Profit']:
         if col in display_df.columns:
             display_df[col] = 'RM ' + display_df[col].map('{:,.2f}'.format)
 
     st.write("### ✨ Cleaned Data Preview")
     st.dataframe(display_df, use_container_width=True)
+
+    # --- 5.5 NEW SUMMARY SECTION STARTS HERE ---
+    st.divider() 
+    st.subheader("💰 Business Summary")
+    
+    # We calculate totals using 'df' because it has pure numbers
+    total_sales = df['Selling Price'].sum()
+    total_cost = df['Cost Price'].sum()
+    total_profit = df['Profit'].sum()
+
+    # This creates three side-by-side boxes
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Total Revenue", f"RM {total_sales:,.2f}")
+    col2.metric("Total Cost", f"RM {total_cost:,.2f}")
+    col3.metric("Total Profit", f"RM {total_profit:,.2f}", delta=f"{total_profit:,.2f}")
+    st.divider()
+    # --- SUMMARY SECTION ENDS HERE ---
 
     # --- 6. EXPORT / DOWNLOAD ---
     buffer = io.BytesIO()
